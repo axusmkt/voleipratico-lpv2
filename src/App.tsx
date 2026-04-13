@@ -51,9 +51,14 @@ const HeaderBar = () => (
 
 const Button = ({ children, className = "", variant = "primary", onClick, style }: { children: ReactNode, className?: string, variant?: "primary" | "secondary" | "outline", onClick?: () => void, style?: CSSProperties }) => (
   <motion.button
-    whileHover={{ scale: 1.02, brightness: 1.1 }}
+    whileHover={{ scale: 1.02 }}
     whileTap={{ scale: 0.98 }}
-    onClick={onClick}
+    onClick={(e) => {
+      // Prevent passing the event object to the onClick handler if it's not expected
+      // and stop propagation to avoid issues with external tracking scripts
+      e.stopPropagation();
+      onClick?.();
+    }}
     style={style}
     className={`
       w-full whitespace-nowrap px-4 py-3 rounded-[6px] font-display text-[16px] font-bold uppercase tracking-tight transition-all flex items-center justify-center gap-2 cursor-pointer
@@ -519,7 +524,10 @@ const FAQ = ({ onCtaClick }: { onCtaClick: () => void }) => {
         {faqs.map((faq, i) => (
           <div key={i} className="bg-dark-main rounded-[6px] border border-white/5 overflow-hidden">
             <button 
-              onClick={() => setOpenIndex(openIndex === i ? null : i)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenIndex(openIndex === i ? null : i);
+              }}
               className="w-full p-4 text-left flex justify-between items-center hover:bg-white/5 transition-colors"
             >
               <span className="font-bold text-sm uppercase tracking-tight text-white">{faq.q}</span>
